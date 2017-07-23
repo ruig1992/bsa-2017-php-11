@@ -12,6 +12,7 @@ use App\Managers\Eloquent\Criteria\{
 use App\Http\Requests\StoreCar;
 use App\Jobs\SendNotificationEmail;
 use Illuminate\Support\Facades\Gate;
+use App\Traits\Jobs\DispatchCarStoredNotification;
 
 /**
  * Class CarController
@@ -19,6 +20,8 @@ use Illuminate\Support\Facades\Gate;
  */
 class CarController extends Controller
 {
+    use DispatchCarStoredNotification;
+
     /**
      * @var \App\Managers\Contracts\CarManager
      */
@@ -100,8 +103,7 @@ class CarController extends Controller
             'user_id',
         ]));
 
-        $job = (new SendNotificationEmail(null, $car))->onQueue('notification');
-        dispatch($job);
+        $this->carStoredNotification($car);
 
         return redirect()->route('cars.index');
     }

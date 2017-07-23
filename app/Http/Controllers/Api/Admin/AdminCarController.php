@@ -8,6 +8,7 @@ use App\Fractal\{
 use App\Http\Controllers\Controller;
 use App\Managers\Contracts\CarManager;
 use Illuminate\Http\{Request, JsonResponse};
+use App\Traits\Jobs\DispatchCarStoredNotification;
 
 /**
  * Class AdminCarController
@@ -15,6 +16,8 @@ use Illuminate\Http\{Request, JsonResponse};
  */
 class AdminCarController extends Controller
 {
+    use DispatchCarStoredNotification;
+
     /**
      * @var \App\Managers\Contracts\CarManager
      */
@@ -90,6 +93,8 @@ class AdminCarController extends Controller
             'price',
             'user_id',
         ]));
+
+        $this->carStoredNotification($car);
 
         return response()->json($car->toArray());
     }
