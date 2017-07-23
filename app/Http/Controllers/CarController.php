@@ -10,6 +10,7 @@ use App\Managers\Eloquent\Criteria\{
     EagerLoad
 };
 use App\Http\Requests\StoreCar;
+use App\Jobs\SendNotificationEmail;
 use Illuminate\Support\Facades\Gate;
 
 /**
@@ -89,7 +90,7 @@ class CarController extends Controller
      */
     public function store(StoreCar $request)
     {
-        $this->cars->create($request->only([
+        $car = $this->cars->create($request->only([
             'model',
             'registration_number',
             'year',
@@ -98,6 +99,9 @@ class CarController extends Controller
             'price',
             'user_id',
         ]));
+
+        $job = (new SendNotificationEmail(null, $car))->onQueue('notification');
+        dispatch($job);
 
         return redirect()->route('cars.index');
     }
