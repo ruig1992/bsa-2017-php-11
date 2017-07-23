@@ -1,7 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Queue;
+use App\Entity\User;
 use App\Jobs\SendNotificationEmail;
+use Illuminate\Support\Facades\Queue;
 
 class QueueTest extends \Tests\TestCase
 {
@@ -9,12 +10,11 @@ class QueueTest extends \Tests\TestCase
     {
         Queue::fake();
 
-        $user = new \App\User();
+        $user = new User();
         $user->fill([
             'id' => 1,
             'first_name' => 'Test',
             'last_name' => 'User',
-            'name' => 'test',
             'email' => 'test@example.com'
         ]);
 
