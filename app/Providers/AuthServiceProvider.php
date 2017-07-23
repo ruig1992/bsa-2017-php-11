@@ -1,10 +1,14 @@
 <?php
-
 namespace App\Providers;
 
+use App\Policies\CarPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
+/**
+ * Class AuthServiceProvider
+ * @package App\Providers
+ */
 class AuthServiceProvider extends ServiceProvider
 {
     /**
@@ -25,6 +29,6 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        //
+        Gate::resource('cars', CarPolicy::class);
     }
 }

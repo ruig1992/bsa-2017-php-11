@@ -177,6 +177,12 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+        App\Providers\EntityManagerServiceProvider::class,
+        App\Providers\FractalServiceProvider::class,
+
+        Laravelista\Ekko\EkkoServiceProvider::class,
+        Laravel\Socialite\SocialiteServiceProvider::class,
+        Spatie\Fractal\FractalServiceProvider::class,
     ],
 
     /*
@@ -226,6 +232,9 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
 
+        'Ekko' => Laravelista\Ekko\Facades\Ekko::class,
+        'Socialite' => Laravel\Socialite\Facades\Socialite::class,
+        'Fractal' => Spatie\Fractal\FractalFacade::class,
     ],
 
 ];

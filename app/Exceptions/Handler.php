@@ -1,11 +1,17 @@
 <?php
-
 namespace App\Exceptions;
 
 use Exception;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\Eloquent\RelationNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
+/**
+ * Class Handler
+ * @package App\Exceptions
+ */
 class Handler extends ExceptionHandler
 {
     /**
@@ -14,10 +20,10 @@ class Handler extends ExceptionHandler
      * @var array
      */
     protected $dontReport = [
-        \Illuminate\Auth\AuthenticationException::class,
-        \Illuminate\Auth\Access\AuthorizationException::class,
+        AuthenticationException::class,
+        AuthorizationException::class,
+        ModelNotFoundException::class,
         \Symfony\Component\HttpKernel\Exception\HttpException::class,
-        \Illuminate\Database\Eloquent\ModelNotFoundException::class,
         \Illuminate\Session\TokenMismatchException::class,
         \Illuminate\Validation\ValidationException::class,
     ];
@@ -44,6 +50,34 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        // If expects JSON - for API calls
+        if ($request->expectsJson()) {
+
+            if ($exception instanceof AuthorizationException) {
+                return response()->json([
+                    'error' => $exception->getMessage(),
+                ], 403);
+            }
+
+            if ($exception instanceof ModelNotFoundException) {
+                return response()->json([
+                    'error' => "The {$exception->getModel()} not found",
+                ], 404);
+            }
+
+            if ($exception instanceof RelationNotFoundException) {
+                return response()->json([
+                    'error' => $exception->getMessage(),
+                ], 400);
+            }
+        }
+
+        if ($exception instanceof AuthorizationException) {
+            return redirect()
+                ->route('app.index')
+                ->with('error', $exception->getMessage());
+        }
+
         return parent::render($request, $exception);
     }
 
@@ -57,7 +91,9 @@ class Handler extends ExceptionHandler
     protected function unauthenticated($request, AuthenticationException $exception)
     {
         if ($request->expectsJson()) {
-            return response()->json(['error' => 'Unauthenticated.'], 401);
+            return response()->json([
+                'error' => 'Unauthenticated.',
+            ], 401);
         }
 
         return redirect()->guest(route('login'));
