@@ -43,7 +43,7 @@ class CarStored extends Mailable
      */
     public function build(): self
     {
-        return $this->view('emails.cars.stored')
+        return $this->markdown('emails.cars.stored')
             ->with([
                 'user' => $this->user->full_name,
                 'car' => $this->car->toArray(),
