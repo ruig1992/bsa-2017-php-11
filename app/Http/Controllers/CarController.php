@@ -1,18 +1,9 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Managers\Contracts\{
-    CarManager,
-    UserManager
-};
-use App\Managers\Eloquent\Criteria\{
-    Latest,
-    EagerLoad
-};
 use App\Http\Requests\StoreCar;
-use App\Jobs\SendNotificationEmail;
-use Illuminate\Support\Facades\Gate;
-use App\Traits\Jobs\DispatchCarStoredNotification;
+use App\Managers\Eloquent\Criteria\Latest;
+use App\Managers\Contracts\{CarManager, UserManager};
 
 /**
  * Class CarController
@@ -20,8 +11,6 @@ use App\Traits\Jobs\DispatchCarStoredNotification;
  */
 class CarController extends Controller
 {
-    use DispatchCarStoredNotification;
-
     /**
      * @var \App\Managers\Contracts\CarManager
      */
@@ -103,7 +92,7 @@ class CarController extends Controller
             'user_id',
         ]));
 
-        $this->carStoredNotification($car);
+        $this->cars->carStoredNotification($car);
 
         return redirect()->route('cars.index');
     }

@@ -2,7 +2,9 @@
 namespace App\Managers\Eloquent;
 
 use App\Entity\Car;
+use App\Entity\User;
 use Illuminate\Support\Collection;
+use App\Jobs\SendNotificationEmail;
 use App\Managers\AbstractEntityManager;
 use App\Managers\Contracts\CarManager as CarManagerContract;
 
@@ -28,5 +30,19 @@ class CarManager extends AbstractEntityManager implements CarManagerContract
         return $this->entity->whereHas('user', function ($query) {
             $query->active();
         })->get();
+    }
+
+    /**
+     * Dispatch CarStored Notification.
+     *
+     * @param  \App\Entity\Car $car
+     * @param  \App\Entity\User|null $user
+     *
+     * @return void
+     */
+    public function carStoredNotification(Car $car, User $user = null): void
+    {
+        $job = (new SendNotificationEmail($user, $car))->onQueue('notification');
+        dispatch($job);
     }
 }
